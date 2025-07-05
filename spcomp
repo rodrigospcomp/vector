@@ -1,0 +1,30 @@
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    data = request.get_json()
+
+    message = data['message']
+    sender = data['sender']['id']  # número do cliente
+
+    # Exemplo de resposta automática
+    if 'certificado' in message.lower():
+        response = "Você quer emitir um certificado digital? Envie 'e-CPF' ou 'e-CNPJ'."
+    elif 'oi' in message.lower() or 'olá' in message.lower():
+        response = "Olá! 👋 Eu sou a assistente virtual da SPCOMP. Como posso te ajudar?\n1️⃣ Suporte\n2️⃣ Certificado\n3️⃣ Sites e Sistemas"
+    else:
+        response = "Desculpe, não entendi. Digite 'ajuda' para ver as opções."
+
+    return jsonify({
+        "send": [
+            {
+                "phone": sender,
+                "message": response
+            }
+        ]
+    })
+
+if __name__ == '__main__':
+    app.run(port=5000)
